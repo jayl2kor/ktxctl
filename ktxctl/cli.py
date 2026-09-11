@@ -315,7 +315,7 @@ def pay_card(rail, reservation) -> bool:
     return False
 
 
-def set_login(debug: bool = False) -> bool:
+def set_login(debug: bool = False, *, pause: bool = True) -> bool:
     credentials = {
         "id": keyring.get_password("KTX", "id") or "",
         "pass": keyring.get_password("KTX", "pass") or "",
@@ -347,6 +347,8 @@ def set_login(debug: bool = False) -> bool:
         keyring.set_password("KTX", "id", login_info["id"])
         keyring.set_password("KTX", "pass", login_info["pass"])
         keyring.set_password("KTX", "ok", "1")
+        if pause:
+            input("로그인완료! (Enter를 누르면 계속합니다) ")
         return True
     except KorailError as err:
         print(err)
@@ -360,7 +362,7 @@ def login(debug: bool = False) -> Korail | None:
         keyring.get_password("KTX", "id") is None
         or keyring.get_password("KTX", "pass") is None
     ):
-        if not set_login(debug=debug):
+        if not set_login(debug=debug, pause=False):
             return None
 
     user_id = keyring.get_password("KTX", "id")
@@ -370,6 +372,7 @@ def login(debug: bool = False) -> Korail | None:
     if not rail.logined:
         print("KTX 로그인에 실패했습니다.")
         return None
+    input("로그인완료! (Enter를 누르면 계속합니다) ")
     return rail
 
 
